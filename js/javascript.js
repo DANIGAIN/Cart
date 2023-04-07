@@ -33,8 +33,8 @@ function removeAllElement(event)
 {
    if(event.target.getAttribute('id') == 'clear-cart'){
     cartContent.remove();
-    localStorage.setItem("coruces",JSON.stringify([]));
-    localStorage.setItem("dataId",JSON.stringify([]));
+    localStorage.removeItem("coruces");
+    localStorage.removeItem("dataId");
 
    }
 }

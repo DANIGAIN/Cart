@@ -7,7 +7,6 @@ let footer = document.querySelector('#footer');
 let footerListEement = footer.querySelectorAll('.link');
 let localStorageCourses = getFromLocalStorage();
 let shoppingCart = document.getElementById('shopping-cart');
-let cartId  = getIdFromLocalStorage();
 let total = 0 ;
 
 //----------------------- EventListener ------------------//
@@ -34,26 +33,33 @@ function removeAllElement(event)
    if(event.target.getAttribute('id') == 'clear-cart'){
     cartContent.remove();
     localStorage.removeItem("coruces");
-    localStorage.removeItem("dataId");
 
    }
 }
 
 function removeElement(event)
 {
-     let removeItem = event.target.getAttribute('id'); 
-     event.target.parentElement.remove();
-     removeItemFromLocalStorage(removeItem);
+    if(event.target.classList.contains('removedItam'))
+    {
+         let removeItem = event.target.getAttribute('id'); 
+         event.target.parentElement.remove();
+         removeItemFromLocalStorage(removeItem);
+    }
 }
 
 function removeItemFromLocalStorage(id)
 {
-    let tamp  =  localStorageCourses.filter(coruces => coruces.id != id);
-    let tampID  = cartId.filter(dataId => dataId != id);
+    localStorageCourses.forEach(function(value ,index)
+    {
+           if(value.id == id)
+           {
+               localStorageCourses.splice(index,1);
+           }
+           localStorage.clear();
+           localStorage.setItem("coruces",JSON.stringify(localStorageCourses));
 
-    
-    localStorage.setItem("coruces",JSON.stringify(tamp));
-    localStorage.setItem("dataId",JSON.stringify(tampID));
+    });
+
 
 }
 
@@ -66,9 +72,20 @@ function removeItemFromLocalStorage(id)
      div.innerHTML=
      `
            <span style="font-size:15px;">Total :${ TotalAmount()+ "  "}</span>
-           <span style="font-size:15px;">Item  :${getIdFromLocalStorage().length}</span>
+           <span style="font-size:15px;">Item  :${totalItam()}</span>
      `;
      cartContent.append(div);
+}
+
+
+function totalItam()
+{
+     let count = 0 ;
+     localStorageCourses.forEach(function(value ,ind)
+     {
+        count ++ ;
+     })
+     return count ; 
 }
 
 function TotalAmount()
@@ -88,7 +105,7 @@ function buyCourses(event)
      
      event.preventDefault();
      let clickId = parseInt(event.target.getAttribute("data-id"));
-     if(event.target.classList.contains("add-to-cart") && cartId.indexOf(clickId) <  0  )
+     if(event.target.classList.contains("add-to-cart") && checkDuplicate(clickId) )
      {
          let course = event.target.parentElement.parentElement;
          getCourseCoutent(course);
@@ -100,6 +117,21 @@ function buyCourses(event)
      }
           
 };
+
+function checkDuplicate(clickId)
+{
+     let ok = true ;
+
+     localStorageCourses.forEach(function(value)
+     {
+
+          if(value.id == clickId)
+          {
+               ok = false;
+          }
+     });
+     return ok ;
+}
 
 let getCourseCoutent = function(course)
 {
@@ -132,7 +164,7 @@ let localStoragegetElement = function(courseContent)
     ` <td><img  class="imgStyle" src="${courseContent.image}" alt="no image"></td>
       <td>${courseContent.name}</td>
       <td>${courseContent.price}</td>
-      <td id="${courseContent.id}" class ="text-danger">X</td>
+      <td id="${courseContent.id}" class =" removedItam text-danger">X</td>
     `;
      cartContent.querySelector('tbody').appendChild(tr);
      imageStyle(cartContent.querySelector('tbody'));
@@ -145,10 +177,7 @@ let setIntoLocalStorage = function(courseContent)
      localStorageCourses.push(courseContent);
      localStorage.setItem("coruces",JSON.stringify(localStorageCourses)); 
 
-     // set index array -- >
-     let x  = parseInt(courseContent.id);
-     cartId.push(x); 
-     localStorage.setItem("dataId",JSON.stringify(cartId)); 
+   
 }
  function getFromLocalStorage()
 {
@@ -165,22 +194,6 @@ let setIntoLocalStorage = function(courseContent)
 
 
 }
-
-function getIdFromLocalStorage()
-{
-        //get index 
-        let dataId = localStorage.getItem('dataId');
-        if(!dataId)
-        {
-             return [];
-        }else 
-        {
-          return JSON.parse(dataId);
-        }
-}
-
-
-
 // --------------------- design card image ------------------//
 
 let imageStyle = function(image)

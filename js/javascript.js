@@ -7,7 +7,7 @@ let footer = document.querySelector('#footer');
 let footerListEement = footer.querySelectorAll('.link');
 let localStorageCourses = getFromLocalStorage();
 let shoppingCart = document.getElementById('shopping-cart');
-let total = 0 ;
+
 
 //----------------------- EventListener ------------------//
 
@@ -33,7 +33,8 @@ function removeAllElement(event)
    if(event.target.getAttribute('id') == 'clear-cart'){
     cartContent.remove();
     localStorage.removeItem("coruces");
-
+    document.querySelector('#cart-total-content').firstElementChild.innerText = "Total: 0";
+    document.querySelector('#cart-total-content').lastElementChild.innerText ="Item : 0";;  
    }
 }
 
@@ -44,6 +45,7 @@ function removeElement(event)
          let removeItem = event.target.getAttribute('id'); 
          event.target.parentElement.remove();
          removeItemFromLocalStorage(removeItem);
+         cartCalculation();
     }
 }
 
@@ -62,21 +64,11 @@ function removeItemFromLocalStorage(id)
 
 
 }
-
  function cartCalculation()
 {
-     let cartContent = document.getElementById('cart-content').parentElement.parentElement.firstElementChild;
-
-     let div = document.createElement('div');
-     div.setAttribute("style","float:right");
-     div.innerHTML=
-     `
-           <span style="font-size:15px;">Total :${ TotalAmount()+ "  "}</span>
-           <span style="font-size:15px;">Item  :${totalItam()}</span>
-     `;
-     cartContent.append(div);
+     document.querySelector('#cart-total-content').firstElementChild.innerText = "Total :"+ TotalAmount();
+     document.querySelector('#cart-total-content').lastElementChild.innerText ="Item  :"+ totalItam();;   
 }
-
 
 function totalItam()
 {
@@ -90,7 +82,7 @@ function totalItam()
 
 function TotalAmount()
 {
-     
+    let total = 0 ;
      localStorageCourses.forEach(function(value)
      {
           total += parseInt(value.price.slice(1));
@@ -149,7 +141,10 @@ let getCourseCoutent = function(course)
 let addToCard = function(courseContent)
 {
     localStoragegetElement(courseContent);
-    setIntoLocalStorage(courseContent);
+    setIntoLocalStorage(courseContent); 
+    cartCalculation();
+    
+
 }
 
 function addEletemtFromLocalStorage()

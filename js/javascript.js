@@ -9,7 +9,7 @@ let localStorageCourses = getFromLocalStorage();
 let shoppingCart = document.getElementById('shopping-cart');
 
 
-//----------------------- EventListener ------------------//
+//----------------------- EcventListener ------------------//
 
 
 eventListeners();
